@@ -1,4 +1,4 @@
-name: Deploy to EC2 (main)
+name: Deploy Frontend to EC2
 
 on:
   push:
@@ -10,31 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.USER_NAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~/KonditoriaApp
-
-            echo "Pull latest code"
+            cd ~/KonditoriaApp/react
             git pull origin main
-
-            echo "Build client"
-            cd react
             npm install
             npm run build
-
-            echo "Deploy client to NGINX"
             sudo rm -rf /var/www/html/*
-            sudo cp -r dist/* /var/www/html/
-
-            echo "Restart server"
-            cd ../node.js
-            npm install
-            sudo systemctl restart myapp
-
-            echo "Deploy completed successfully"
+            sudo cp -r build/* /var/www/html/
+            sudo systemctl restart nginx
