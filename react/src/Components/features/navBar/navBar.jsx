@@ -29,7 +29,7 @@ const NavBar = () => {
     return (
         <>
             <ul>
-                <li><Link to="home">דף הבית</Link></li>
+                <li><Link to="home">דף בית</Link></li>
 
                 {(!currentUser && !manager) && (
                     <>
